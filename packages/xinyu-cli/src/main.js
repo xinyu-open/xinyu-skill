@@ -22,7 +22,7 @@ const HELP = `xinyu-cli — 新语圈子命令行工具
 用法：xinyu-cli <domain> <command> [--参数 值] [--json]
 
 认证
-  auth login [--no-qr] [--timeout 300]   扫码登录（微信小程序确认）
+  auth login [--no-qr] [--qr-png <path>] [--timeout 300]   扫码登录（微信小程序确认）
   auth status                            查看登录状态
   auth logout                            清除本地凭据
   doctor                                 环境与登录态自检

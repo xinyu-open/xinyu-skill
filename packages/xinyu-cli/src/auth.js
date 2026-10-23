@@ -1,6 +1,8 @@
+import { writeFileSync } from 'node:fs';
 import qrcode from 'qrcode-terminal';
-import { CliError, EXIT } from './errors.js';
+import { CliError, EXIT, usageError } from './errors.js';
 import { writeConfig } from './config.js';
+import { qrPng } from './qr-png.js';
 import {
   ACCESS_TOKEN_COOKIE,
   Client,
@@ -22,7 +24,15 @@ function sleep(ms) {
  * 2) 终端渲染二维码，用户用微信扫码在小程序内确认
  * 3) 轮询 status，APPROVED 后 complete 换取 token（服务端通过 Set-Cookie 下发）
  */
-export async function login({ baseUrl, timeoutSeconds, noQr }) {
+function writeQrPng(path, text) {
+  try {
+    writeFileSync(path, qrPng(text));
+  } catch (err) {
+    throw usageError(`写入二维码图片失败：${err.message}`);
+  }
+}
+
+export async function login({ baseUrl, timeoutSeconds, noQr, qrPngPath }) {
   const client = new Client({ baseUrl });
 
   const started = await client.requestRaw('POST', '/auth/mini-web-login/start', {
@@ -41,14 +51,30 @@ export async function login({ baseUrl, timeoutSeconds, noQr }) {
   }
   const cookie = `${NONCE_COOKIE}=${nonce}`;
 
-  process.stdout.write('\n请用微信扫描下方二维码，在小程序内确认登录：\n\n');
-  if (!noQr) {
+  // 真终端里照旧画字符二维码；--qr-png 落一张图片，给聊天窗口这类渲染不了字符二维码的场景用。
+  // 输出被重定向（管道/日志/Agent 抓取）时不画字符二维码：半块字符依赖等宽字体与相称行高，
+  // 被抓去贴进聊天窗口必然错行、扫不出来。
+  const minutes = Math.floor(expiresIn / 60) || 1;
+  const showQr = !noQr && !qrPngPath && Boolean(process.stdout.isTTY);
+  if (qrPngPath) {
+    writeQrPng(qrPngPath, urlLink);
+    process.stdout.write('\n二维码已保存为图片，用微信扫描或在微信中打开链接确认登录：\n\n');
+    process.stdout.write(`二维码图片：${qrPngPath}\n`);
+    process.stdout.write(`登录链接：${urlLink}\n`);
+  } else if (showQr) {
+    process.stdout.write('\n请用微信扫描下方二维码，在小程序内确认登录：\n\n');
     qrcode.generate(urlLink, { small: true }, (code) => {
       process.stdout.write(`${code}\n`);
     });
+    process.stdout.write(`\n或在微信中打开链接：${urlLink}\n`);
+  } else {
+    process.stdout.write('\n请在微信中打开下面的链接，在小程序内确认登录：\n\n');
+    process.stdout.write(`${urlLink}\n`);
+    if (!noQr) {
+      process.stdout.write('\n（输出不是终端，已跳过二维码，避免渲染错乱无法扫描；可用 --qr-png 生成图片）\n');
+    }
   }
-  process.stdout.write(`\n或在微信中打开链接：${urlLink}\n`);
-  process.stdout.write(`二维码 ${Math.floor(expiresIn / 60) || 1} 分钟内有效，等待确认…\n`);
+  process.stdout.write(`${qrPngPath || showQr ? '二维码' : '链接'} ${minutes} 分钟内有效，等待确认…\n`);
 
   const deadline = Date.now() + Math.min(expiresIn, timeoutSeconds || expiresIn) * 1000;
   let approved = false;

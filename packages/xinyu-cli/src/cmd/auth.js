@@ -1,7 +1,7 @@
 import { login } from '../auth.js';
 import { clearConfig, configFile, readConfig } from '../config.js';
 import { EXIT } from '../errors.js';
-import { optionalInt } from '../flags.js';
+import { optionalInt, str } from '../flags.js';
 import { resolveBaseUrl } from '../http.js';
 import { printJson, printKV } from '../output.js';
 
@@ -11,7 +11,9 @@ export const auth = {
     return login({
       baseUrl,
       timeoutSeconds: optionalInt(ctx.flags, 'timeout'),
-      noQr: !!ctx.flags['no-qr'],
+      // parseFlags 把 --no-qr 解析成 flags.qr = false，两种写法都兼容
+      noQr: ctx.flags.qr === false || ctx.flags['no-qr'] === true,
+      qrPngPath: str(ctx.flags, 'qr-png'),
     });
   },
 

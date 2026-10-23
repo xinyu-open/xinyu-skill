@@ -146,6 +146,7 @@ Skill 内部按两层路由执行：**原子操作**（命中已知命令 → �
 |------|------|
 | `xinyu-cli auth login` | 扫码登录（微信小程序内确认） |
 | `xinyu-cli auth login --no-qr` | 只输出链接不渲染二维码 |
+| `xinyu-cli auth login --qr-png /tmp/qr.png` | 二维码存成 PNG（聊天窗口/文档里贴图用，图片能扫） |
 | `xinyu-cli auth login --timeout 120` | 自定义等待秒数（默认取服务端 300 秒） |
 | `xinyu-cli auth status` | 查看登录状态，未登录返回退出码 `4` |
 | `xinyu-cli auth logout` | 清除本地凭据 |
