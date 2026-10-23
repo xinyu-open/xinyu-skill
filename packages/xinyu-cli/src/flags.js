@@ -48,6 +48,11 @@ export function requiredStr(flags, key, flagName = `--${key}`) {
   return value;
 }
 
+// ID 必须按字符串透传：新语 ID 为 19 位雪花 ID，转 Number 会丢精度（超过 2^53）
+export function optionalId(flags, key) {
+  return str(flags, key);
+}
+
 export function optionalInt(flags, key) {
   const value = str(flags, key);
   if (value === undefined) return undefined;

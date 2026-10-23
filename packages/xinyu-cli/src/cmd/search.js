@@ -1,5 +1,5 @@
 import { usageError } from '../errors.js';
-import { optionalInt, requiredStr } from '../flags.js';
+import { optionalId, optionalInt, requiredStr } from '../flags.js';
 import { displayName, fmtTime, printJson, printTable, stripHtml } from '../output.js';
 import { assertGroupMember } from './topic.js';
 
@@ -18,7 +18,7 @@ async function runSearch(ctx, itemType, render) {
     query: {
       keyword,
       item_type: itemType,
-      group_id: optionalInt(ctx.flags, 'group-id'),
+      group_id: optionalId(ctx.flags, 'group-id'),
       cursor: optionalInt(ctx.flags, 'cursor') ?? 0,
       // 搜索接口要求 count > 0，未指定时按默认 20 上送
       count: optionalInt(ctx.flags, 'count') ?? 20,
@@ -41,7 +41,7 @@ export const search = {
         [
           { title: 'TOPIC_ID', value: (row) => row.group_topic?.topic_info?.topic_id, max: 22 },
           { title: '标题/摘要', value: (row) => stripHtml(row.highlight?.title) || stripHtml(row.highlight?.desc), max: 44 },
-          { title: '作者', value: (row) => row.group_topic?.author?.nickname, max: 16 },
+          { title: '作者', value: (row) => displayName(row.group_topic?.author), max: 16 },
           { title: '发布', value: (row) => fmtTime(row.group_topic?.topic_info?.publish_time), max: 18 },
         ],
         items,

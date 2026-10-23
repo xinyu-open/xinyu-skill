@@ -72,5 +72,13 @@ else
   ng 'auth status 退出码合法' "实际 $code"
 fi
 
+# 7. ID 参数必须按字符串透传（19 位雪花 ID 转 Number 会丢精度）
+if grep -REn "optionalInt\(ctx\.flags, '(group|topic|comment|user|collection|question|tag|questionee)-id'" \
+  "$ROOT/packages/xinyu-cli/src" >/dev/null 2>&1; then
+  ng 'ID 参数误用 optionalInt（会丢精度）'
+else
+  ok 'ID 参数均按字符串处理'
+fi
+
 printf '\n通过 %d 项，失败 %d 项\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

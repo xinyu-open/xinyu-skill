@@ -1,9 +1,9 @@
-import { optionalInt } from '../flags.js';
+import { optionalId, optionalInt } from '../flags.js';
 import { printJson, printKV } from '../output.js';
 
 export const user = {
   async info(ctx) {
-    const userId = optionalInt(ctx.flags, 'user-id');
+    const userId = optionalId(ctx.flags, 'user-id');
     const body = await ctx.client.request('GET', '/user/info', {
       query: userId ? { user_id: userId } : undefined,
     });

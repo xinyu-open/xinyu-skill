@@ -1,5 +1,5 @@
 import { CliError, EXIT, permissionError, usageError } from '../errors.js';
-import { boolFlag, optionalInt, optionalList, requiredStr, requireYes, str } from '../flags.js';
+import { boolFlag, optionalId, optionalInt, optionalList, requiredStr, requireYes, str } from '../flags.js';
 import { displayName, fmtTime, printJson, printTable, stripHtml, topicTypeName } from '../output.js';
 
 const GROUP_TOPIC_ID_TYPE = 11;
@@ -64,7 +64,7 @@ export const topic = {
   // 圈子主题列表：scope 必须是合法值，否则后端会返回空列表
   async list(ctx) {
     const groupId = requiredStr(ctx.flags, 'group-id');
-    const tagId = optionalInt(ctx.flags, 'tag-id');
+    const tagId = optionalId(ctx.flags, 'tag-id');
     const body = await ctx.client.request('GET', '/group/topics', {
       query: {
         group_id: groupId,
