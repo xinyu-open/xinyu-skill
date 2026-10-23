@@ -17,7 +17,7 @@
 
 ```bash
 # 1. 安装 CLI
-npm install -g xinyu-cli
+npm install -g @xinyu-open/xinyu-cli
 
 # 2. 安装 Skill
 npx skills add https://github.com/xinyu-open/xinyu-skill --yes

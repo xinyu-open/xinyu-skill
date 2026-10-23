@@ -1,8 +1,11 @@
 {
-  "name": "xinyu-cli",
+  "name": "@xinyu-open/xinyu-cli",
   "version": "0.1.0",
   "description": "新语圈子命令行工具：圈子、主题、提问、搜索与互动",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "xinyu-cli": "bin/xinyu-cli.js"
   },
@@ -23,5 +26,14 @@
     "cli",
     "agent"
   ],
+  "homepage": "https://github.com/xinyu-open/xinyu-skill",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xinyu-open/xinyu-skill.git",
+    "directory": "packages/xinyu-cli"
+  },
+  "bugs": {
+    "url": "https://github.com/xinyu-open/xinyu-skill/issues"
+  },
   "license": "MIT"
 }

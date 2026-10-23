@@ -3,7 +3,7 @@
 新语圈子命令行工具：圈子管理、内容搜索、主题查看、发布互动、提问问答。
 
 ```bash
-npm install -g xinyu-cli
+npm install -g @xinyu-open/xinyu-cli
 xinyu-cli auth login     # 微信扫码登录
 xinyu-cli group list     # 我加入的圈子
 xinyu-cli --help         # 全部命令

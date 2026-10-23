@@ -20,7 +20,7 @@ metadata:
 本 Skill 只有 **CLI 通道**（`xinyu-cli`）：
 
 1. 宿主可执行 `xinyu-cli` → 直接按本 Skill 调用
-2. 命令不存在 → 按 [`references/auth-errors.md`](references/auth-errors.md#cli-未安装恢复流程) 引导安装（`npm i -g xinyu-cli`）后重试原操作
+2. 命令不存在 → 按 [`references/auth-errors.md`](references/auth-errors.md#cli-未安装恢复流程) 引导安装（`npm i -g @xinyu-open/xinyu-cli`）后重试原操作
 3. 未登录 / 登录失效 → 引导执行 `xinyu-cli auth login`（扫码登录，详见 [`references/auth-errors.md`](references/auth-errors.md)）
 
 ## 执行模式

@@ -12,7 +12,7 @@
 ### 1. 安装 CLI
 
 ```bash
-npm install -g xinyu-cli
+npm install -g @xinyu-open/xinyu-cli
 xinyu-cli --version
 ```
 
@@ -43,7 +43,7 @@ xinyu-cli group list
 
 | 现象 | 处理 |
 |------|------|
-| `command not found: xinyu-cli` | 确认 npm 全局 bin 目录在 `PATH` 中，或改用 `npx xinyu-cli` |
+| `command not found: xinyu-cli` | 确认 npm 全局 bin 目录在 `PATH` 中，或改用 `npx @xinyu-open/xinyu-cli` |
 | 二维码扫不开 | 用 `--no-qr` 拿链接，在微信里直接打开；链接 5 分钟有效 |
 | 提示 `未登录 [code 1006]` | 重新执行 `xinyu-cli auth login` |
 | 无法访问接口 | 检查网络；可用 `--base-url` 指定其他环境 |

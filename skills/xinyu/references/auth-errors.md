@@ -61,7 +61,7 @@ node -v
 **2. 全局安装并验证：**
 
 ```bash
-npm install -g xinyu-cli
+npm install -g @xinyu-open/xinyu-cli
 xinyu-cli --version
 ```
 
