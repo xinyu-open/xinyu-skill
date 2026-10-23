@@ -1,6 +1,6 @@
 {
   "name": "@xinyu-open/xinyu-cli",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "新语圈子命令行工具：圈子、主题、提问、搜索与互动",
   "type": "module",
   "publishConfig": {

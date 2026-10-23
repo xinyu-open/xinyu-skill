@@ -33,6 +33,7 @@ xinyu-cli question answer --question-id <id> --group-id <id> --content "回答"
 # 图片（直传 OSS，返回 uri）
 xinyu-cli upload image --file ./a.png
 xinyu-cli upload image --file ./a.png --dir cmt/
+xinyu-cli upload image --url https://a.com/x.png
 
 # 兜底：直接调接口
 xinyu-cli api raw --method GET --path /group/topics --query '{"group_id":"1","scope":"all"}'

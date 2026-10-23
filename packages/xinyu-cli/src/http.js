@@ -1,6 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { CliError, EXIT, fromEnvelope, usageError } from './errors.js';
-import { FILE_TYPE, MAX_IMAGE_BYTES, imageMeta, putObject } from './oss.js';
+import { CliError, EXIT, fromEnvelope } from './errors.js';
+import { FILE_TYPE, putObject, readImageSource } from './oss.js';
 
 export const DEFAULT_BASE_URL = 'https://xinyu.zone/eden/v1';
 export const ACCESS_TOKEN_COOKIE = 'x-jwt-token';
@@ -114,20 +113,10 @@ export class Client {
   }
 
   // 两步式上传：先取 STS 临时凭证，再用签名直传 OSS（替代已废弃的 /upload/image）
-  async uploadImage(filePath, { dir = 'post/' } = {}) {
+  // source 支持 { file } 本地路径或 { url } 远端地址，便于直接上传聊天框里的贴图链接
+  async uploadImage(source, { dir = 'post/' } = {}) {
     if (!this.token) throw new CliError('上传图片需要登录，请先执行 xinyu-cli auth login', EXIT.AUTH);
-    const { ext, mime } = imageMeta(filePath);
-
-    let buffer;
-    try {
-      buffer = await readFile(filePath);
-    } catch (err) {
-      throw usageError(`读取图片失败：${err.message}`);
-    }
-    if (buffer.byteLength > MAX_IMAGE_BYTES) {
-      const mb = (buffer.byteLength / 1024 / 1024).toFixed(1);
-      throw new CliError(`图片大小 ${mb}MB，超过 5MB 限制`, EXIT.USAGE);
-    }
+    const { buffer, ext, mime } = await readImageSource(source);
 
     const prefix = dir.endsWith('/') ? dir : `${dir}/`;
     // file_name 只用于让服务端确定 signed_url 的扩展名，最终对象 key 由 oss_dir + xid 决定

@@ -62,7 +62,8 @@ const HELP = `xinyu-cli — 新语圈子命令行工具
   question answer --question-id <id> --group-id <id> --content 回答 [--close]
 
 其他
-  upload image --file ./a.png [--dir post/]   直传 OSS，返回 uri（默认 post/）
+  upload image --file ./a.png [--dir post/]   直传 OSS，返回 uri（默认目录 post/）
+  upload image --url <图片地址> [--dir cmt/]  下载远端图片后同样直传 OSS
   user info [--user-id <id>]
   api raw --method GET --path /group/topics --query '{"group_id":"1"}'
 
