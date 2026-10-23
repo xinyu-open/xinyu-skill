@@ -1,0 +1,27 @@
+{
+  "name": "xinyu-cli",
+  "version": "0.1.0",
+  "description": "新语圈子命令行工具：圈子、主题、提问、搜索与互动",
+  "type": "module",
+  "bin": {
+    "xinyu-cli": "bin/xinyu-cli.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "qrcode-terminal": "^0.12.0"
+  },
+  "keywords": [
+    "xinyu",
+    "新语",
+    "cli",
+    "agent"
+  ],
+  "license": "MIT"
+}

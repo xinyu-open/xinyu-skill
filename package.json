@@ -1,0 +1,13 @@
+{
+  "name": "xinyu-skill",
+  "version": "0.1.0",
+  "private": true,
+  "description": "新语圈子 CLI（xinyu-cli）与 Agent Skill",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "check:docs": "python3 scripts/check-docs.py"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xinyu",
+  "version": "0.1.0",
+  "description": "新语圈子插件：通过 xinyu-cli 管理圈子与内容（发主题、评论回复、提问问答、精华与标签等）",
+  "author": {
+    "name": "新语",
+    "url": "https://xinyu.zone"
+  },
+  "homepage": "https://github.com/xinyu-open/xinyu-skill",
+  "repository": "https://github.com/xinyu-open/xinyu-skill",
+  "license": "MIT",
+  "keywords": ["xinyu", "新语", "cli", "圈子"]
+}
