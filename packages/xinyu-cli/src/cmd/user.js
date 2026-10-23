@@ -8,7 +8,7 @@ export const user = {
       query: userId ? { user_id: userId } : undefined,
     });
     const info = body.user_info || {};
-    if (ctx.json) return printJson(info);
+    if (ctx.json) return printJson(body);
     printKV([
       ['用户 ID', info.user_id || '-'],
       ['昵称', info.nickname || info.user_name || '-'],

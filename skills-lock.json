@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "xinyu": {
+      "source": "xinyu-open/xinyu-skill",
+      "sourceType": "github",
+      "skillPath": "skills/xinyu/SKILL.md",
+      "computedHash": "183b31b9687455e964b0aded3631efc96024178d6b58971e4fe0522e94a3fc6a"
+    }
+  }
+}

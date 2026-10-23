@@ -1,11 +1,11 @@
 import { boolFlag, optionalInt, optionalList, requiredStr, str } from '../flags.js';
-import { fmtTime, printJson, printTable, stripHtml } from '../output.js';
+import { displayName, fmtTime, printJson, printTable, stripHtml } from '../output.js';
 
 const QUESTION_COLUMNS = [
   { title: 'TOPIC_ID', value: (row) => row.topic_info?.topic_id, max: 22 },
   { title: '问题/回答', value: (row) => row.topic_info?.title || stripHtml(row.topic_info?.content), max: 40 },
-  { title: '提问者', value: (row) => row.questioner?.nickname || '-', max: 18 },
-  { title: '被提问者', value: (row) => row.questionee?.nickname || '-', max: 18 },
+  { title: '提问者', value: (row) => displayName(row.questioner), max: 18 },
+  { title: '被提问者', value: (row) => displayName(row.questionee), max: 18 },
   { title: '发布', value: (row) => fmtTime(row.topic_info?.publish_time), max: 18 },
 ];
 
@@ -49,13 +49,13 @@ export const question = {
     const questionId = requiredStr(ctx.flags, 'question-id');
     const body = await ctx.client.request('GET', `/group/question/${questionId}`);
     const data = body.data || {};
-    if (ctx.json) return printJson(data);
+    if (ctx.json) return printJson(body);
     const info = data.topic_info || {};
     const questionInfo = info.question || {};
     process.stdout.write(`问题 ID：${questionInfo.question_id || questionId}\n`);
     process.stdout.write(`圈子：${data.group_data?.group_info?.group_name || '-'}\n`);
-    process.stdout.write(`提问者：${data.questioner?.nickname || '匿名'}\n`);
-    process.stdout.write(`被提问者：${data.questionee?.nickname || '-'}\n`);
+    process.stdout.write(`提问者：${data.questioner ? displayName(data.questioner) : '匿名'}\n`);
+    process.stdout.write(`被提问者：${displayName(data.questionee)}\n`);
     process.stdout.write(`状态：${questionInfo.status ?? '-'}\n`);
     process.stdout.write('\n---------- 提问内容 ----------\n');
     process.stdout.write(`${stripHtml(questionInfo.content) || '（空）'}\n`);

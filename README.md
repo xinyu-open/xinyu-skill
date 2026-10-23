@@ -206,7 +206,7 @@ xinyu-cli search users --keyword 张三                         # 用户
 xinyu-cli search tags --keyword 写作                          # 标签
 ```
 
-主题/文章支持排序与时间范围：`--sort <n>`、`--time-range 1|2|3|4`（一周/一月/一季/一年）。
+主题/文章支持排序与时间范围：`--sort 1|2|3`（相关性/最新/热门）、`--time-range 1|2|3|4`（一周/一月/一季/一年），每页默认 20 条。
 
 ### 主题查看（topic）
 

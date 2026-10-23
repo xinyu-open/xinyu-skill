@@ -8,6 +8,12 @@ export function displayWidth(text) {
   return width;
 }
 
+// 用户的 nickname 可能未设置，按 nickname → user_name → 新语号 → user_id 兜底
+export function displayName(user) {
+  if (!user) return '-';
+  return user.nickname || user.user_name || user.xinyu_id || user.user_id || '-';
+}
+
 export function truncate(text, max) {
   const value = String(text ?? '').replace(/\s+/g, ' ').trim();
   if (max === undefined || displayWidth(value) <= max) return value;

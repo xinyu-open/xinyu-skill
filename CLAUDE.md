@@ -49,7 +49,10 @@ skills/xinyu/
 - 成功判定：`status_code === 0`；非 0 由 `src/errors.js` 转成带退出码的错误
 - 退出码：`0` 成功 / `1` 参数或网络 / `2` 业务 / `3` 权限 / `4` 认证
 - 写入命令要支持 `--json`，删除类必须要求 `--yes`
+- `--json` 统一输出完整响应体（含 `has_more` / `next_cursor`），不要只打印 `data`
+- 用户昵称可能为空，展示统一用 `output.js` 的 `displayName()` 兜底
 - 主题正文读取统一走 `fetchTopicOrFail`：`allow_view !== true` 视为无权访问，**不做摘要降级**
+- 新增命令后跑 `npm test`（`scripts/smoke.sh`）确认 `--version`、错误码、参数校验没回归
 
 ## 安全
 

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { readConfig, writeConfig } from './config.js';
 import { CliError, EXIT } from './errors.js';
 import { parseFlags } from './flags.js';
@@ -13,6 +14,8 @@ import { upload } from './cmd/upload.js';
 import { user } from './cmd/user.js';
 
 const COMMANDS = { api, auth, doctor, group, question, search, topic, upload, user };
+
+const VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 const HELP = `xinyu-cli — 新语圈子命令行工具
 
@@ -66,6 +69,8 @@ const HELP = `xinyu-cli — 新语圈子命令行工具
 全局参数
   --json        输出原始 JSON
   --base-url    覆盖接口地址（默认 https://xinyu.zone/eden/v1）
+  --version     查看版本
+  --help        查看帮助
 `;
 
 function domainHelp(domain, commands) {
@@ -75,9 +80,18 @@ function domainHelp(domain, commands) {
 
 export async function main(argv) {
   const { positional, flags } = parseFlags(argv);
+  if (flags.version) {
+    process.stdout.write(`${VERSION}\n`);
+    return EXIT.OK;
+  }
   if (argv.length === 0 || flags.help) {
     process.stdout.write(HELP);
     return EXIT.OK;
+  }
+  // 只给了全局参数（如 --json）没有子命令时，输出帮助并按参数错误处理
+  if (positional.length === 0) {
+    process.stdout.write(HELP);
+    return EXIT.USAGE;
   }
 
   const [domain] = positional;

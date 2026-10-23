@@ -1,6 +1,6 @@
 import { usageError } from '../errors.js';
 import { optionalInt, requiredStr } from '../flags.js';
-import { fmtTime, printJson, printTable, stripHtml } from '../output.js';
+import { displayName, fmtTime, printJson, printTable, stripHtml } from '../output.js';
 import { assertGroupMember } from './topic.js';
 
 // 后端统一搜索接口的 item_type 取值
@@ -20,8 +20,9 @@ async function runSearch(ctx, itemType, render) {
       item_type: itemType,
       group_id: optionalInt(ctx.flags, 'group-id'),
       cursor: optionalInt(ctx.flags, 'cursor') ?? 0,
-      count: optionalInt(ctx.flags, 'count'),
-      sort_type: optionalInt(ctx.flags, 'sort'),
+      // 搜索接口要求 count > 0，未指定时按默认 20 上送
+      count: optionalInt(ctx.flags, 'count') ?? 20,
+      sort_type: optionalInt(ctx.flags, 'sort') ?? 1,
       time_range_type: optionalInt(ctx.flags, 'time-range'),
     },
   });
@@ -54,7 +55,7 @@ export const search = {
         [
           { title: 'ARTICLE_ID', value: (row) => row.article?.article_info?.article_id, max: 22 },
           { title: '标题', value: (row) => stripHtml(row.highlight?.title) || row.article?.article_info?.title, max: 44 },
-          { title: '作者', value: (row) => row.article?.author_info?.nickname, max: 16 },
+          { title: '作者', value: (row) => displayName(row.article?.author_info), max: 16 },
           { title: '摘要', value: (row) => stripHtml(row.highlight?.desc), max: 36 },
         ],
         items,
@@ -80,7 +81,7 @@ export const search = {
       printTable(
         [
           { title: 'USER_ID', value: (row) => row.user?.user_id, max: 22 },
-          { title: '昵称', value: (row) => row.user?.nickname, max: 24 },
+          { title: '昵称', value: (row) => displayName(row.user), max: 24 },
           { title: '新语号', value: (row) => row.user?.xinyu_id, max: 20 },
         ],
         items,

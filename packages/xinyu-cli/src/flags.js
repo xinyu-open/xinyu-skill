@@ -10,8 +10,9 @@ export function parseFlags(argv) {
       positional.push(arg);
       continue;
     }
-    if (arg === '-y' || arg === '-h') {
-      flags[arg === '-y' ? 'yes' : 'help'] = true;
+    if (arg === '-y' || arg === '-h' || arg === '-v') {
+      const short = { '-y': 'yes', '-h': 'help', '-v': 'version' };
+      flags[short[arg]] = true;
       continue;
     }
     if (arg.startsWith('--no-')) {

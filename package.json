@@ -7,7 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "check:docs": "python3 scripts/check-docs.py"
+    "check:docs": "python3 scripts/check-docs.py",
+    "test": "bash scripts/smoke.sh"
   },
   "license": "MIT"
 }

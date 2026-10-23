@@ -1,5 +1,5 @@
 import { optionalInt, requiredStr, str } from '../flags.js';
-import { fmtTime, groupTypeName, memberStatusName, printJson, printTable } from '../output.js';
+import { displayName, fmtTime, groupTypeName, memberStatusName, printJson, printTable } from '../output.js';
 
 function groupRow(detail) {
   const info = detail?.group_info || {};
@@ -51,7 +51,7 @@ export const group = {
 
     let rows = (body.data || []).map(groupRow);
     if (limit) rows = rows.slice(0, limit);
-    if (ctx.json) return printJson(rows);
+    if (ctx.json) return printJson(body);
     printTable(GROUP_COLUMNS, rows);
   },
 
@@ -59,13 +59,13 @@ export const group = {
     const groupId = requiredStr(ctx.flags, 'group-id');
     const body = await ctx.client.request('GET', '/group', { query: { group_id: groupId } });
     const detail = body.data || {};
-    if (ctx.json) return printJson(detail);
+    if (ctx.json) return printJson(body);
     const info = detail.group_info || {};
     const rows = [
       ['圈子 ID', info.group_id],
       ['名称', info.group_name],
       ['类型', groupTypeName(info.group_type)],
-      ['圈主', detail.owner?.user_info?.nickname || '-'],
+      ['圈主', displayName(detail.owner?.user_info)],
       ['我的角色', roleName(detail.user_member_info?.role)],
       ['最近发布', fmtTime(info.last_publish_time)],
       ['绑定专栏', detail.bound_column?.column_name || detail.bound_column?.name || '-'],
@@ -78,7 +78,7 @@ export const group = {
     const groupId = requiredStr(ctx.flags, 'group-id');
     const body = await ctx.client.request('GET', '/group/tags', { query: { group_id: groupId } });
     const tags = body.tags || [];
-    if (ctx.json) return printJson(tags);
+    if (ctx.json) return printJson(body);
     printTable(
       [
         { title: 'TAG_ID', value: (row) => row.tag_id, max: 22 },
@@ -108,7 +108,7 @@ export const group = {
     printTable(
       [
         { title: 'USER_ID', value: (row) => row.user_info?.user_id, max: 22 },
-        { title: '昵称', value: (row) => row.user_info?.nickname, max: 24 },
+        { title: '昵称', value: (row) => displayName(row.user_info), max: 24 },
         { title: '新语号', value: (row) => row.user_info?.xinyu_id, max: 20 },
         { title: '状态', value: (row) => memberStatusName(row.member_info?.status), max: 10 },
         { title: '加入时间', value: (row) => fmtTime(row.member_info?.join_time), max: 18 },
@@ -124,10 +124,10 @@ export const group = {
     const userId = requiredStr(ctx.flags, 'user-id');
     const body = await ctx.client.request('GET', `/group/${groupId}/member/${userId}`);
     const data = body.data || {};
-    if (ctx.json) return printJson(data);
+    if (ctx.json) return printJson(body);
     printTable(
       [
-        { title: '昵称', value: (row) => row.user_info?.nickname, max: 24 },
+        { title: '昵称', value: (row) => displayName(row.user_info), max: 24 },
         { title: '新语号', value: (row) => row.user_info?.xinyu_id, max: 20 },
         { title: '状态', value: (row) => memberStatusName(row.member_info?.status), max: 10 },
         { title: '加入时间', value: (row) => fmtTime(row.member_info?.join_time), max: 18 },
@@ -142,7 +142,7 @@ export const group = {
     const groupId = requiredStr(ctx.flags, 'group-id');
     const body = await ctx.client.request('GET', '/group/collections', { query: { group_id: groupId } });
     const collections = body.data || [];
-    if (ctx.json) return printJson(collections);
+    if (ctx.json) return printJson(body);
     printTable(
       [
         { title: 'COLLECTION_ID', value: (row) => row.collection_id, max: 22 },

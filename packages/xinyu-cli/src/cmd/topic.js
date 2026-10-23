@@ -1,6 +1,6 @@
 import { CliError, EXIT, permissionError, usageError } from '../errors.js';
 import { boolFlag, optionalInt, optionalList, requiredStr, requireYes, str } from '../flags.js';
-import { fmtTime, printJson, printTable, stripHtml, topicTypeName } from '../output.js';
+import { displayName, fmtTime, printJson, printTable, stripHtml, topicTypeName } from '../output.js';
 
 const GROUP_TOPIC_ID_TYPE = 11;
 
@@ -30,7 +30,7 @@ export async function fetchTopicOrFail(client, topicId) {
   if (data.allow_view !== true) {
     throw permissionError('无权查看该主题：未加入该圈子，或会员已过期（该主题发布于过期之后）');
   }
-  return data;
+  return { body, data };
 }
 
 function topicRow(detail) {
@@ -39,7 +39,7 @@ function topicRow(detail) {
     topic_id: info.topic_id,
     title: info.title,
     type: topicTypeName(info.topic_type),
-    author: detail?.author?.nickname,
+    author: displayName(detail?.author),
     publish_time: info.publish_time,
     comment_cnt: info.comment_cnt,
     digg_cnt: info.digg_cnt,
@@ -93,15 +93,15 @@ export const topic = {
 
   async detail(ctx) {
     const topicId = requiredStr(ctx.flags, 'topic-id');
-    const data = await fetchTopicOrFail(ctx.client, topicId);
-    if (ctx.json) return printJson(data);
+    const { body, data } = await fetchTopicOrFail(ctx.client, topicId);
+    if (ctx.json) return printJson(body);
 
     const info = data.topic_info || {};
     const tags = (info.tags || []).map((tag) => tag.title).filter(Boolean);
     process.stdout.write(`主题 ID：${info.topic_id}\n`);
     process.stdout.write(`类型：${topicTypeName(info.topic_type)}\n`);
     if (info.title) process.stdout.write(`标题：${info.title}\n`);
-    process.stdout.write(`作者：${data.author?.nickname || '-'}（${data.author?.user_id || '-'}）\n`);
+    process.stdout.write(`作者：${displayName(data.author)}（${data.author?.user_id || '-'}）\n`);
     process.stdout.write(`圈子：${data.group_data?.group_info?.group_name || '-'}（${data.group_data?.group_info?.group_id || '-'}）\n`);
     process.stdout.write(`发布：${fmtTime(info.publish_time)}\n`);
     process.stdout.write(`互动：评论 ${info.comment_cnt ?? 0} / 点赞 ${info.digg_cnt ?? 0} / 浏览 ${info.view_cnt ?? 0}\n`);
@@ -129,7 +129,7 @@ export const topic = {
     printTable(
       [
         { title: 'COMMENT_ID', value: (row) => row.comment_info?.comment_id, max: 22 },
-        { title: '作者', value: (row) => row.author_info?.nickname, max: 18 },
+        { title: '作者', value: (row) => displayName(row.author_info), max: 18 },
         { title: '内容', value: (row) => stripHtml(row.comment_info?.content), max: 50 },
         { title: '回复', value: (row) => row.comment_info?.reply_cnt ?? 0, max: 6 },
         { title: '时间', value: (row) => fmtTime(row.comment_info?.ctime), max: 18 },
@@ -155,7 +155,7 @@ export const topic = {
     printTable(
       [
         { title: 'COMMENT_ID', value: (row) => row.comment_info?.comment_id, max: 22 },
-        { title: '作者', value: (row) => row.author_info?.nickname, max: 18 },
+        { title: '作者', value: (row) => displayName(row.author_info), max: 18 },
         { title: '内容', value: (row) => stripHtml(row.comment_info?.content), max: 50 },
         { title: '时间', value: (row) => fmtTime(row.comment_info?.ctime), max: 18 },
       ],

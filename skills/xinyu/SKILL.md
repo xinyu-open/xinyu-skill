@@ -104,7 +104,7 @@ User (user_id) — 已登录账户
 | 提问 | `question post` / `question list` / `question detail` / `question answer` |
 | 其他 | `upload image` / `user info` / `api raw` |
 
-全局参数：`--json`（原始 JSON）、`--base-url`（覆盖接口地址）。
+全局参数：`--json`（输出完整响应体，含 `has_more` / `next_cursor` 等分页字段）、`--base-url`（覆盖接口地址）、`--version`、`--help`。
 
 ## 退出码约定
 
