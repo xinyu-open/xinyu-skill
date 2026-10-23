@@ -21,7 +21,7 @@ metadata:
 
 1. 宿主可执行 `xinyu-cli` → 直接按本 Skill 调用
 2. 命令不存在 → 按 [`references/auth-errors.md`](references/auth-errors.md#cli-未安装恢复流程) 引导安装（`npm i -g @xinyu-open/xinyu-cli`）后重试原操作
-3. 未登录 / 登录失效 → 引导执行 `xinyu-cli auth login`（扫码登录，详见 [`references/auth-errors.md`](references/auth-errors.md)）
+3. 未登录 / 登录失效 → 后台执行 `xinyu-cli auth login` 并**只把登录链接转给用户**（不要把二维码贴进对话，详见 [`references/auth-errors.md`](references/auth-errors.md)）
 
 ## 执行模式
 
@@ -57,7 +57,7 @@ metadata:
 | 浏览圈子主题列表（全部/精华/问答/待回答/文章/图片） | → [`references/topic-list.md`](references/topic-list.md) |
 | 查看主题详情 / 评论 / 楼中楼回复 | → [`references/topic-detail.md`](references/topic-detail.md) |
 | 发布主题 | → [`references/topic-create.md`](references/topic-create.md) |
-| 编辑主题（正文 / 标题 / 标签 / 精华 / 置顶） | → [`references/topic-edit.md`](references/topic-edit.md) |
+| 编辑主题（标题 / 标签 / 精华 / 置顶；**不支持改正文和图片**） | → [`references/topic-edit.md`](references/topic-edit.md) |
 | 删除主题 | → [`references/topic-delete.md`](references/topic-delete.md) |
 | 评论 / 回复某条评论 | → [`references/topic-reply.md`](references/topic-reply.md) |
 | 点赞 / 取消点赞 | → [`references/topic-digg.md`](references/topic-digg.md) |
@@ -136,5 +136,7 @@ User (user_id) — 已登录账户
 | 用户只给圈子名称时，要求用户自己提供 `group_id` | 先 `group list` 或 `search groups` 查到 ID 再继续 |
 | 名称命中多个圈子时默认取第一个 | 列出候选（`group_id` + 名称）让用户确认 |
 | `topic detail` 报权限错误时改用 `topic comments` 绕过 | 告知用户需加入圈子 / 会员已过期 |
-| 编辑正文后立刻重复提交 | 等待审核结果，审核中重复提交会失败 |
+| 用 `topic edit --pics` / `--content` 改图片或正文 | 这两个参数服务端不接收，会静默丢弃还返回「成功」；图片只能在 `topic create` 带，改图/改正文只能删除后重发 |
+| 看到 `✓ 主题已更新` 就当字段写进去了 | 用 `topic detail --json` 复核；`topic_info.pics` 不存在即无图 |
+| 把登录二维码用 `cat` 贴进对话给用户扫 | 字符二维码只适合真终端；给 `https://wxmpurl.cn/...` 链接，或 `--qr-png` 生成图片再展示 |
 | 用 `topic edit` 改文章主题或问答主题的正文 | 文章主题正文在创作端维护，问答主题用 `question answer` |

@@ -55,6 +55,7 @@ xinyu-cli topic replies --topic-id 111222333 --comment-id 444555
 - **访问权限**：主题正文只对圈子成员开放。非成员、或会员过期后发布的主题，CLI 会直接报「无权查看该主题」（退出码 `3`），**不会返回摘要**，不要重试或改用其他接口绕过
 - 评论/回复命令会先校验主题可见性；无权限时同样以退出码 `3` 失败
 - 正文为 HTML，CLI 已转为纯文本输出；需要原始 HTML 用 `--json` 读取 `html_content`
+- 图片在 `topic_info.pics`（`omitempty`）：**字段不存在即没有图**。这是核对图片是否真的写入的唯一手段（编辑接口不能改图，见 [topic-edit](topic-edit.md)）
 - 文章型主题（`topic_type=3`）正文在文章侧，需要完整内容时用 `xinyu-cli api raw --method GET --path /group/topic/<id>/article`
 - 问答主题的 `topic_info.question` 会带 `question_id`，回答用 `question answer`
 

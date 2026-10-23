@@ -10,6 +10,8 @@
 |------|------|
 | `xinyu-cli auth login` | 扫码登录（首次使用、token 失效或切换账户） |
 | `xinyu-cli auth login --no-qr` | 只输出链接不渲染二维码（终端不支持二维码时） |
+| `xinyu-cli auth login --qr-png /tmp/qr.png` | 二维码存成 PNG，图片在聊天窗口里能正常扫 |
+| `xinyu-cli auth login > log 2>&1` | 输出被重定向时 CLI 会自动跳过二维码，只留链接 |
 | `xinyu-cli auth login --timeout 120` | 自定义等待确认的秒数（默认取服务端 300 秒） |
 | `xinyu-cli auth status` | 查看当前登录账户，未登录返回退出码 `4` |
 | `xinyu-cli auth logout` | 清除本地凭据 |
@@ -19,12 +21,29 @@
 
 `xinyu-cli auth login` 启动后：
 
-1. 终端输出二维码和 `https://wxaurl.cn/...` 链接，**5 分钟内有效**
+1. 真终端里输出二维码和 `https://wxmpurl.cn/...` 链接，**5 分钟内有效**
 2. 用户用微信扫码（或在微信中打开链接），进入小程序授权页并点击确认
 3. CLI 每 2 秒轮询一次，确认后自动换取 token 并保存
 4. 输出「✓ 已登录：昵称（user_id）」
 
-> 作为 AI Agent 帮用户登录时：在后台运行 `xinyu-cli auth login`，把二维码/链接转给用户，等待其确认；**不要要求用户把验证码、token 粘贴到对话中**。
+> 作为 AI Agent 帮用户登录时，在后台运行 `xinyu-cli auth login`（输出重定向到日志），然后二选一：
+>
+> **A. 只给链接**（最简单，微信里打开链接即可确认）：
+>
+> ```bash
+> nohup xinyu-cli auth login > /tmp/xinyu_login.log 2>&1 &
+> sleep 3; grep -o 'https://wxmpurl\.cn/[A-Za-z0-9]*' /tmp/xinyu_login.log | head -1
+> ```
+>
+> **B. 给一张能扫的图**（用户更愿意扫码时）：加 `--qr-png`，把生成的 PNG 当图片展示给用户。
+>
+> ```bash
+> nohup xinyu-cli auth login --qr-png /tmp/xinyu-qr.png > /tmp/xinyu_login.log 2>&1 &
+> sleep 3; ls -l /tmp/xinyu-qr.png
+> ```
+
+> **不要 `cat` 日志把字符二维码贴进对话**：它是半块字符（`▀▄█`）画的，只有等宽字体 + 相称行高的真终端才扫得出来，聊天窗口/网页必然把方块拉歪、行错位。CLI 在输出被重定向时已自动跳过字符二维码，`cat` 出来只有链接。
+> **不要要求用户把验证码、token 粘贴到对话中**。链接和图片都 5 分钟过期，过期后重新执行命令换一份。
 
 ## 凭据存储
 

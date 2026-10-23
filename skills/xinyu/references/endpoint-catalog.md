@@ -42,7 +42,7 @@
 | GET | `/group/topic/comment/list` | 评论列表（`topic_id`、`cursor`、`limit`、`sort`） |
 | GET | `/group/topic/comment/reply/list` | 楼中楼回复（`topic_id`、`comment_id`、`cursor`、`limit`） |
 | POST | `/group/topic` | 发布主题，返回新主题详情（含 `topic_id`） |
-| PATCH | `/group/topic/:id` | 编辑主题：`edit_data.{content,pics,files,title,tag_ids,sticky,digested}` |
+| PATCH | `/group/topic/:id` | 编辑主题：`edit_data.{title,tag_ids,sticky,digested}`（**只支持这 4 个**；`content/pics/files` 服务端不接收，传了静默丢弃） |
 | DELETE | `/group/topic/:id` | 删除主题 |
 | POST | `/group/topic/comment` | 发表评论 / 回复（`comment_info.{item_id,item_type=11,content,reply_to_comment_id,pics}`） |
 | DELETE | `/group/topic/comment` | 删除评论（`comment_id`） |
