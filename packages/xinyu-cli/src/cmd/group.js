@@ -1,5 +1,5 @@
 import { optionalInt, requiredStr, str } from '../flags.js';
-import { displayName, fmtTime, groupTypeName, memberStatusName, printJson, printTable } from '../output.js';
+import { displayName, fmtTime, groupTypeName, memberStatusName, printJson, printTable, stripHtml } from '../output.js';
 
 function groupRow(detail) {
   const info = detail?.group_info || {};
@@ -61,17 +61,22 @@ export const group = {
     const detail = body.data || {};
     if (ctx.json) return printJson(body);
     const info = detail.group_info || {};
+    const intro = info.group_intro || {};
     const rows = [
       ['圈子 ID', info.group_id],
       ['名称', info.group_name],
       ['类型', groupTypeName(info.group_type)],
+      ['成员数', info.member_cnt ?? '-'],
+      ['主题数', info.topic_cnt ?? '-'],
       ['圈主', displayName(detail.owner?.user_info)],
       ['我的角色', roleName(detail.user_member_info?.role)],
       ['最近发布', fmtTime(info.last_publish_time)],
       ['绑定专栏', detail.bound_column?.column_name || detail.bound_column?.name || '-'],
       ['合集数', (detail.collections || []).length],
+      ['简介', intro.group_desc || '-'],
     ];
     for (const [key, value] of rows) process.stdout.write(`${key}：${value ?? '-'}\n`);
+    process.stdout.write(`\n---------- 圈子介绍 ----------\n${stripHtml(intro.intro) || '（空）'}\n`);
   },
 
   async tags(ctx) {

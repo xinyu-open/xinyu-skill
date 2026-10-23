@@ -177,7 +177,7 @@ Skill 内部按两层路由执行：**原子操作**（命中已知命令 → �
 xinyu-cli group list                              # 我加入的所有圈子
 xinyu-cli group list --owned                      # 我创建的圈子
 xinyu-cli group list --owned --type 2             # 只看付费圈子
-xinyu-cli group detail --group-id <id>            # 详情：圈主、我的角色、绑定专栏、合集数
+xinyu-cli group detail --group-id <id>            # 详情：成员数、圈主、我的角色、绑定专栏、圈子介绍
 xinyu-cli group tags --group-id <id>              # 圈子标签（用于发帖打标签）
 ```
 

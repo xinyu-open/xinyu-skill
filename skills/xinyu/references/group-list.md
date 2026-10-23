@@ -43,14 +43,15 @@ xinyu-cli group detail --group-id 123456789
 |----------|------|------|---------|
 | 123456789 | 示例圈子 | 付费 | 2026-10-01 12:00 |
 
-`group detail` 为分行键值：圈子 ID、名称、类型、圈主、我的角色、最近发布、绑定专栏、合集数。
+`group detail` 为分行键值：圈子 ID、名称、类型、成员数、主题数、圈主、我的角色、最近发布、绑定专栏、合集数、简介，最后单列一段「圈子介绍」正文。
 
 ## 说明
 
 - `group_id` 是纯数字字符串，后续 `topic`、`group tags`、`group members` 等命令都依赖它
 - `group list` 同时包含加入和创建的圈子；需要区分时用 `group list --owned`
 - 详情里的「绑定专栏」只在专栏圈子中存在
-- 加 `--json` 可拿到 `user_member_info`、`bound_column`、`collections` 等完整字段
+- 「简介」取 `group_intro.group_desc`（短描述），「圈子介绍」取 `group_intro.intro`（正文，HTML 已转纯文本）；两者都可能为空
+- 加 `--json` 可拿到 `group_intro`、`user_member_info`、`bound_column`、`collections` 等完整字段
 
 ## 错误说明
 
