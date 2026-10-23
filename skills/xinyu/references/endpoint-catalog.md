@@ -62,8 +62,10 @@
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/upload/image` | 上传图片（multipart，字段名 `file`），返回 `url.uri` |
+| GET | `/platform/ali_sts/get` | 取 OSS 临时凭证（`file_type` 1=图片 / 2=视频、`file_name`、`oss_dir`），返回 `credential` / `xid` / `signed_url` |
 | GET | `/user/info` | 用户信息（默认当前登录用户） |
+
+直传流程：`/platform/ali_sts/get` 取凭证 → 用 STS 签名 `PUT` 到 `eden-app.oss-cn-shanghai.aliyuncs.com/{oss_dir}{xid}{ext}`，`uri` 即该对象 key。旧的 `POST /upload/image`（multipart）已废弃。
 
 ## 通用约定
 

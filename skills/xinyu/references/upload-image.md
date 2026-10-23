@@ -6,27 +6,31 @@
 
 ```bash
 xinyu-cli upload image --file ./cover.png
+xinyu-cli upload image --file ./shot.png --dir cmt/
 ```
 
 ## 参数
 
 | 参数 | 必填 | 说明 |
 |------|------|------|
-| `--file <path>` | **是** | 本地图片路径（jpg / png / gif / webp） |
+| `--file <path>` | **是** | 本地图片路径（png / jpg / jpeg / gif / webp / bmp / heic） |
+| `--dir <prefix>` | 否 | 目录前缀，默认 `post/`；评论用 `cmt/`，头像 `avatar/`，封面 `cover/` |
 
 ## 输出
 
 ```
-abc123.png
-图片地址：https://img.xinyu.zone/abc123.png
+post/dbdoedlb0fteou062110.png
+图片地址：https://p2-eden.millewill.com/post/dbdoedlb0fteou062110.png?auth_key=...
 ```
 
-第一行是 `uri`，可直接传给 `--pics`；第二行是可直接访问的地址。
+第一行是 `uri`，可直接传给 `--pics`；第二行是带签名的访问地址，有有效期，仅供人工预览。
 
 ## 说明
 
 - 上传需要登录
-- 服务端会做压缩与大小校验，超大图片会返回 `图片太大，无法上传`
+- 两段式上传：先向服务端取 STS 临时凭证，再用签名直传 OSS，图片内容不经过业务接口
+- 单张图片不超过 5MB
+- 扩展名沿用原文件，CLI 不做格式转换（web 端会压缩转 webp，这里保持原格式与内容一致）
 - 一次只能上传一张；多图请多次调用，再用逗号拼接 `--pics`
 - 当前**只支持图片**，暂不支持文件附件（主题的 `files` 字段 CLI 不提供上传入口）
 - 上传成功但未被使用时不会自动清理，避免上传大量无用图片
@@ -36,8 +40,10 @@ abc123.png
 | 错误 | 原因 |
 |------|------|
 | `读取图片失败：...` | 路径不存在或无权限读取 |
-| `图片太大，无法上传 [code 101]` | 超过服务端大小限制 |
-| `上传成功但未返回图片 uri` | 服务端异常，重试一次 |
+| `不支持的图片格式 .txt` | 扩展名不在支持列表内 |
+| `图片大小 6.2MB，超过 5MB 限制` | 文件过大 |
+| `获取 OSS 上传凭证失败` | 服务端未返回凭证，重试一次 |
+| `上传到 OSS 失败（HTTP 403）` | STS 凭证过期或签名失败，重试 |
 | `上传图片需要登录` | 未登录 |
 
 通用错误见 [auth-errors](auth-errors.md#常见错误处理)。

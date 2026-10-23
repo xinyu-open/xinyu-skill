@@ -270,7 +270,8 @@ xinyu-cli question answer --question-id <id> --group-id <id> --content "回答" 
 ### 图片与账号
 
 ```bash
-xinyu-cli upload image --file ./cover.png     # 返回 uri，可直接用于 --pics
+xinyu-cli upload image --file ./cover.png     # 直传 OSS，返回 uri，可直接用于 --pics
+xinyu-cli upload image --file ./shot.png --dir cmt/  # 评论用图，默认目录为 post/
 xinyu-cli user info                           # 我的账号资料
 xinyu-cli user info --user-id <uid>           # 指定用户
 ```

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
-import { basename } from 'node:path';
 import { CliError, EXIT, fromEnvelope, usageError } from './errors.js';
+import { FILE_TYPE, MAX_IMAGE_BYTES, imageMeta, putObject } from './oss.js';
 
 export const DEFAULT_BASE_URL = 'https://xinyu.zone/eden/v1';
 export const ACCESS_TOKEN_COOKIE = 'x-jwt-token';
@@ -113,40 +113,33 @@ export class Client {
     return { res, body: payload };
   }
 
-  async uploadImage(filePath) {
+  // 两步式上传：先取 STS 临时凭证，再用签名直传 OSS（替代已废弃的 /upload/image）
+  async uploadImage(filePath, { dir = 'post/' } = {}) {
     if (!this.token) throw new CliError('上传图片需要登录，请先执行 xinyu-cli auth login', EXIT.AUTH);
+    const { ext, mime } = imageMeta(filePath);
+
     let buffer;
     try {
       buffer = await readFile(filePath);
     } catch (err) {
       throw usageError(`读取图片失败：${err.message}`);
     }
-    const form = new FormData();
-    form.append('file', new Blob([buffer]), basename(filePath));
+    if (buffer.byteLength > MAX_IMAGE_BYTES) {
+      const mb = (buffer.byteLength / 1024 / 1024).toFixed(1);
+      throw new CliError(`图片大小 ${mb}MB，超过 5MB 限制`, EXIT.USAGE);
+    }
 
-    let res;
-    try {
-      res = await fetch(this.url('/upload/image'), {
-        method: 'POST',
-        headers: { [ACCESS_TOKEN_COOKIE]: this.token },
-        body: form,
-      });
-    } catch (err) {
-      throw new CliError(`上传失败：${err.message}`, EXIT.USAGE);
+    const prefix = dir.endsWith('/') ? dir : `${dir}/`;
+    // file_name 只用于让服务端确定 signed_url 的扩展名，最终对象 key 由 oss_dir + xid 决定
+    const sts = await this.request('GET', '/platform/ali_sts/get', {
+      query: { file_type: FILE_TYPE.IMAGE, file_name: `image${ext}`, oss_dir: prefix },
+    });
+    if (!sts?.xid || !sts?.credential?.security_token) {
+      throw new CliError('获取 OSS 上传凭证失败', EXIT.BIZ);
     }
-    this.captureTokens(res);
-    const text = await res.text();
-    let payload;
-    try {
-      payload = text ? JSON.parse(text) : {};
-    } catch {
-      throw new CliError(`上传接口返回非 JSON（HTTP ${res.status}）`, EXIT.USAGE);
-    }
-    if (typeof payload.status_code === 'number' && payload.status_code !== 0) {
-      throw fromEnvelope(payload);
-    }
-    const uri = payload?.url?.uri;
-    if (!uri) throw new CliError('上传成功但未返回图片 uri', EXIT.BIZ);
-    return { uri, url: payload?.url?.url_list?.[0] };
+
+    const uri = `${prefix}${sts.xid}${ext}`;
+    await putObject({ key: uri, body: buffer, mime, credential: sts.credential });
+    return { uri, url: sts.signed_url };
   }
 }
