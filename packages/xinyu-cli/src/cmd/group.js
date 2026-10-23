@@ -93,7 +93,8 @@ export const group = {
     const groupId = requiredStr(ctx.flags, 'group-id');
     const keyword = str(ctx.flags, 'keyword');
     const cursor = optionalInt(ctx.flags, 'cursor') ?? 0;
-    const count = optionalInt(ctx.flags, 'count');
+    // 后端在 count=0 时只会返回空列表 + has_more，必须显式给默认值
+    const count = optionalInt(ctx.flags, 'count') ?? 20;
 
     const body = keyword
       ? await ctx.client.request('GET', '/group/member/search', {
@@ -116,7 +117,10 @@ export const group = {
       ],
       members,
     );
-    if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
+    const nextCursor = body.next_cursor ?? cursor + members.length;
+    if (body.has_more && members.length > 0) {
+      process.stdout.write(`\n还有更多，下一页：--cursor ${nextCursor}\n`);
+    }
   },
 
   async member(ctx) {
@@ -157,20 +161,23 @@ export const group = {
   async 'collection-topics'(ctx) {
     const collectionId = requiredStr(ctx.flags, 'collection-id');
     const cursor = optionalInt(ctx.flags, 'cursor') ?? 0;
-    const count = optionalInt(ctx.flags, 'count');
+    const count = optionalInt(ctx.flags, 'count') ?? 20;
     const body = await ctx.client.request('GET', '/group/collection/topics', {
       query: { collection_id: collectionId, cursor, count },
     });
     if (ctx.json) return printJson(body);
+    const topics = body.data || [];
     printTable(
       [
         { title: 'TOPIC_ID', value: (row) => row.topic_info?.topic_id, max: 22 },
         { title: '标题', value: (row) => row.topic_info?.title, max: 36 },
-        { title: '作者', value: (row) => row.author?.nickname, max: 18 },
+        { title: '作者', value: (row) => displayName(row.author), max: 18 },
         { title: '发布', value: (row) => fmtTime(row.topic_info?.publish_time), max: 18 },
       ],
-      body.data || [],
+      topics,
     );
-    if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
+    if (body.has_more && topics.length > 0) {
+      process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor ?? cursor + topics.length}\n`);
+    }
   },
 };

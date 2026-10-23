@@ -41,7 +41,7 @@ export const question = {
     });
     if (ctx.json) return printJson(body);
     printTable(QUESTION_COLUMNS, body.data || []);
-    if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
+    if (body.has_more && (body.data || []).length) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
   },
 
   // 提问详情：仅提问者与被提问者可查看

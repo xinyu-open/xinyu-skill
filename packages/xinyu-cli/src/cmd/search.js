@@ -28,7 +28,7 @@ async function runSearch(ctx, itemType, render) {
   });
   if (ctx.json) return printJson(body);
   render(body.data || []);
-  if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
+  if (body.has_more && (body.data || []).length) process.stdout.write(`\n还有更多，下一页：--cursor ${body.next_cursor}\n`);
 }
 
 export const search = {

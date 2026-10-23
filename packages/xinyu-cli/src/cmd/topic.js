@@ -77,7 +77,7 @@ export const topic = {
     });
     if (ctx.json) return printJson(body);
     printTable(TOPIC_COLUMNS, (body.data || []).map(topicRow));
-    if (body.has_more) {
+    if (body.has_more && (body.data || []).length) {
       process.stdout.write(`\n还有更多，下一页：--end-time ${body.next_cursor}\n`);
     }
   },
@@ -136,7 +136,7 @@ export const topic = {
       ],
       body.data || [],
     );
-    if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.cursor}\n`);
+    if (body.has_more && (body.data || []).length) process.stdout.write(`\n还有更多，下一页：--cursor ${body.cursor}\n`);
   },
 
   async replies(ctx) {
@@ -161,7 +161,7 @@ export const topic = {
       ],
       body.data || [],
     );
-    if (body.has_more) process.stdout.write(`\n还有更多，下一页：--cursor ${body.cursor}\n`);
+    if (body.has_more && (body.data || []).length) process.stdout.write(`\n还有更多，下一页：--cursor ${body.cursor}\n`);
   },
 
   // 发布主题（普通主题；文章主题请走创作端）
